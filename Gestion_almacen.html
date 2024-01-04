@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  
+  <title>Inventario</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css">
+
+  <style>
+
+    /* Tipografía */
+    body {
+      font-family: 'Poppins', sans-serif;
+    }
+
+    /* Variables */
+    :root {
+      --azul: #036e94;
+      --gris: #F5F5F5;  
+    }
+
+    /* Encabezado */
+    .encabezado {
+      background-color: var(--azul);
+      color: white;
+      padding: 20px 40px;
+      display: flex;
+      justify-content: space-between;  
+    }
+
+    .encabezado a {
+      color: white;
+      text-decoration: none;
+    }
+
+    /* Contenido */
+    .contenido {
+      display: grid;
+      grid-template-columns: 250px auto;
+      background-color: var(--gris);  
+    }
+
+    /* Menú */
+    .menu {
+      padding: 40px;
+      background-color: #fff;
+      border-right: 2px solid var(--azul);    
+    }
+    
+    .menu-titulo {
+      color: var(--azul);
+      font-weight: 600;
+      margin-bottom: 20px;
+    }
+
+    .menu a {
+      color: #838383;
+      text-decoration: none;
+      display: block;
+      margin-bottom: 10px;
+    }
+
+    /* Sección */
+    .seccion {
+      padding: 40px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+
+    .seccion-titulo {
+      margin-bottom: 30px;
+      font-size: 28px;
+    }
+
+    /* Imagen */
+    .imagen {
+      max-width: 100%;
+      height: auto;
+      margin-top: 20px;
+    }
+
+  </style>
+  
+</head>
+
+<body>
+
+  <!-- Encabezado -->
+  <header class="encabezado">
+    
+    <nav>
+      <a href="#">Soluciones Spin</a>    
+    </nav>
+
+  </header>
+
+  <!-- Contenido -->
+  <main class="contenido">   
+    
+    <!-- Menú -->
+    <aside class="menu">
+      <h3 class="menu-titulo">Módulos</h3>
+      
+      <a href="almacen.html"><i class="fas fa-warehouse"></i> Almacén</a>
+      <a href="entradas.html"><i class="fas fa-shipping-fast"></i> Entradas</a>      
+      <a href="login.html"><i class="fas fa-sign-out-alt"></i> Salir</a>
+    </aside>
+
+    <!-- Sección -->
+    <section class="seccion">
+      <h2 class="seccion-titulo">Gestión de Inventario</h2>
+      <p>¡Bienvenido! El sistema de gestión de inventario te permite controlar los productos en almacén, gestionar las entradas y salidas, así como realizar un seguimiento detallado de las existencias y los movimientos de productos.</p>
+      <img src="inventario-icono.png" alt="Ícono de inventario" class="imagen">
+    </section>
+
+  </main>
+  
+</body>
+</html>
+

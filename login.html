@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Iniciar sesión</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background-color: #f8f9fa;
+    }
+    .login-form {
+      max-width: 400px;
+      width: 90%;
+      padding: 30px;
+      background-color: #ffffff;
+      border-radius: 8px;
+      box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.1);
+    }
+    .logo-container {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 30px;
+    }
+    .logo {
+      max-width: 140px;
+      height: auto;
+    }
+    .form-label {
+      font-weight: 500;
+    }
+    .btn-login {
+      padding: 10px 20px;
+      font-weight: 500;
+    }
+    /* Estilos para los mensajes de alerta */
+    .alert-danger {
+      color: #721c24;
+      background-color: #f8d7da;
+      border-color: #f5c6cb;
+    }
+    .alert-success {
+      color: #155724;
+      background-color: #d4edda;
+      border-color: #c3e6cb;
+    }
+  </style>
+</head>
+<body>
+
+<div class="login-form">
+  <div class="logo-container">
+    <img src="LOGO-spin.png" alt="Logo" class="logo">
+  </div>
+  <h2 class="mb-4 text-center">Iniciar sesión</h2>
+  <form id="loginForm">
+    <div class="mb-3">
+      <label for="usuario" class="form-label"><i class="bi bi-person-fill"></i> Usuario</label>
+      <input type="text" class="form-control" id="usuario" name="usuario" required>
+    </div>
+    <div class="mb-3">
+      <label for="contrasena" class="form-label"><i class="bi bi-lock-fill"></i> Contraseña</label>
+      <input type="password" class="form-control" id="contrasena" name="contrasena" required>
+    </div>
+    <div class="mb-3">
+      <label for="rol" class="form-label"><i class="bi bi-person-badge-fill"></i> Rol</label>
+      <select class="form-select" id="rol" name="rol" required>
+        <option value="" disabled selected>Selecciona un rol</option>
+        <option value="asistencia_oficina">Asistencia Oficina</option>
+        <option value="reportes">Reportes</option>
+        <option value="admin_sistemas">Admin Sistemas</option>
+        <option value="almacen">Almacén</option>
+        <option value="asistencia_obra">Asistencia Obra</option>
+      </select>
+    </div>
+    <div class="mb-3">
+      <label for="obra" class="form-label"><i class="bi bi-building"></i> Obra</label>
+      <select class="form-select" id="obra" name="obra" required disabled>
+        <option value="" disabled selected>Selecciona una obra</option>
+      </select>
+    </div>
+    <button type="submit" class="btn btn-primary btn-block btn-login"><i class="bi bi-box-arrow-in-right"></i> Iniciar sesión</button>
+  </form>
+  <div id="mensaje" class="mt-3"></div>
+</div>
+
+<!-- Bootstrap Icons -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+
+<script>
+  const rolSelect = document.getElementById('rol');
+  const obraSelect = document.getElementById('obra');
+
+  rolSelect.addEventListener('change', function() {
+    if (rolSelect.value === 'asistencia_obra') {
+      obraSelect.disabled = false;
+      obraSelect.setAttribute('required', 'true');
+    } else {
+      obraSelect.disabled = true;
+      obraSelect.removeAttribute('required');
+      obraSelect.selectedIndex = 0;
+    }
+  });
+
+  document.getElementById('loginForm').addEventListener('submit', function(event) {
+    event.preventDefault();
+    
+    const usuario = document.getElementById('usuario').value;
+    const contrasena = document.getElementById('contrasena').value;
+    const rol = document.getElementById('rol').value;
+    const obra = document.getElementById('obra').value;
+
+    fetch('https://apis-soluciones-spin.run/login.php', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        usuario: usuario,
+        contrasena: contrasena,
+        rol: rol,
+        obra: obra
+      })
+    })
+    .then(response => response.json())
+    .then(data => {
+      const mensajeDiv = document.getElementById('mensaje');
+      if (data.message === 'Inicio de sesión exitoso' && (rol === 'asistencia_obra' || rol === 'almacen' || rol === 'reportes' || rol === 'admin_sistemas' || rol === 'asistencia_oficina')) {
+        mensajeDiv.innerHTML = `<div class="alert alert-success" role="alert">${data.message}</div>`;
+        setTimeout(() => {
+          mensajeDiv.innerHTML = '';
+        }, 3000);
+        if (rol === 'asistencia_obra') {
+          window.location.href = 'menu_epp.html';
+        } else if (rol === 'almacen') {
+          window.location.href = 'Gestion_almacen.html';
+        } else if (rol === 'reportes') {
+          window.location.href = 'reportes.html';
+        } else if (rol === 'asistencia_oficina') {
+          window.location.href = 'asistencia_oficina.html';
+        } else if (rol === 'admin_sistemas') {
+          window.location.href = 'sistemas.html';
+        }
+      } else {
+        mensajeDiv.innerHTML = `<div class="alert alert-danger" role="alert">${data.message}</div>`;
+      }
+    })
+    .catch(error => {
+      document.getElementById('mensaje').innerHTML = `<div class="alert alert-danger" role="alert">Error: ${error.message}</div>`;
+    });
+  });
+
+  // Obtener las obras de la API y agregarlas al select
+  fetch('https://apis-soluciones-spin.run/obra.php')
+    .then(response => response.json())
+    .then(data => {
+      const obrasSelect = document.getElementById('obra');
+      data.forEach(obra => {
+        const option = document.createElement('option');
+        option.value = obra.id; 
+        option.textContent = obra.nombre; 
+        obrasSelect.appendChild(option);
+      });
+    })
+    .catch(error => {
+      console.error('Error fetching obras:', error);
+    });
+</script>
+
+</body>
+</html>

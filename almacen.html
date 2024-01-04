@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gestión de Almacén EPP</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+  <style>
+    .notification-icon {
+      position: absolute;
+      right: 20px;
+      top: 20px;
+    }
+
+    .notification-icon i {
+      font-size: 1.5rem;
+    }
+
+    .tabla-flotante {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background-color: white;
+      border: 1px solid #ccc;
+      box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+      z-index: 1000;
+      max-height: 400px;
+      overflow-y: auto;
+      display: none;
+    }
+
+    .cerrar-btn {
+      margin-top: 0px;
+      margin-right: 0px;
+      float: right;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container mt-5">
+    <h1 class="mb-4">Gestión de Almacén EPP</h1>
+    <button id="mostrarFormulario" class="btn btn-primary" data-toggle="modal" data-target="#formularioModalAgregar">Agregar Registro</button>
+    <div class="notification-icon" id="notification-icon">
+      <i class="fa fa-bell" onclick="mostrarTablaSolicitudes()"></i>
+      <span id="notification-count" class="badge badge-danger">0</span>
+    </div>
+
+    <!-- Modal Agregar -->
+    <div class="modal fade" id="formularioModalAgregar" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Formulario de Registro</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <form id="registroForm">
+              <div class="form-group">
+                <label for="nombre_equipo">Nombre del Equipo:</label>
+                <input type="text" class="form-control" id="nombre_equipo" required>
+              </div>
+              <div class="form-group">
+                <label for="uso">Uso:</label>
+                <input type="text" class="form-control" id="uso" required>
+              </div>
+              <div class="form-group">
+                <label for="stock_actual">Stock Actual:</label>
+                <input type="number" class="form-control" id="stock_actual" required>
+              </div>
+              <div class="form-group">
+                <label for="stock_min">Stock Mínimo:</label>
+                <input type="number" class="form-control" id="stock_min" required>
+              </div>
+              <div class="form-group">
+                <label for="stock_max">Stock Máximo:</label>
+                <input type="number" class="form-control" id="stock_max" required>
+              </div>
+              <div class="form-group">
+                <label for="precio">Precio:</label>
+                <input type="number" class="form-control" id="precio" step="0.01" required>
+              </div>
+              <div class="form-group">
+                <button type="submit" class="btn btn-primary">Agregar Registro</button>
+                <button type="button" class="btn btn-secondary" id="limpiarFormulario">Limpiar</button>
+              </div> 
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+    <a href="Gestion_almacen.html" class="btn btn-secondary">--Volver--</a>
+
+    <div id="mensajeContainer" class="mt-3"></div>
+    <div id="mensaje"></div>
+
+    <table class="table table-bordered table-hover">
+      <thead class="thead-dark">
+        <tr>
+          <th>ID de Equipo</th>
+          <th>Nombre del Equipo</th>
+          <th>Uso</th>
+          <th>Stock Actual</th>
+          <th>Stock Mínimo</th>
+          <th>Stock Máximo</th>
+          <th>Precio</th>
+        </tr>
+      </thead>
+      <tbody id="tablaDatos"></tbody>
+    </table>
+
+    <!-- Formulario desplegable para la tabla de solicitudes -->
+    <div class="tabla-flotante" id="ventanaTablaSolicitudes" style="display: none;">
+      <button class="btn btn-success cerrar-btn" onclick="cerrarTablaSolicitudes()">Cerrar</button>
+      <table class="table table-bordered table-hover">
+        <thead class="thead-dark">
+          <tr>
+            <th>ID de Solicitud</th>
+            <th>Nombre de la Obra</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody id="bodyTablaSolicitudes"></tbody>
+      </table>
+    </div>
+
+    <!-- Modal Detalles de la Solicitud -->
+<div class="modal fade" id="detallesSolicitudModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Detalles de la Solicitud</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body" id="detallesSolicitudBody">
+        <!-- Contenido dinámico de detalles de la solicitud -->
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+    <script>
+      // Funciones JavaScript aquí
+    
+      function verificarStockMaximo(data) {
+        const stock_actual = data.stock_actual;
+        const stock_max = data.stock_max;
+    
+        if (parseInt(stock_actual) > parseInt(stock_max)) {
+          // Si el stock actual es mayor que el stock máximo, muestra una alerta
+          const mensajeContainer = document.getElementById('mensajeContainer');
+          const alerta = document.createElement('div');
+          alerta.classList.add('alert', 'alert-secondary', 'mt-3');
+          alerta.textContent = `El equipo ${data.nombre_equipo} ha excedido el stock máximo (${stock_max}).`;
+          mensajeContainer.appendChild(alerta);
+        }
+      }
+    
+      function cargarDatos() {
+        fetch('https://apis-soluciones-spin.run/almacen_epp.php')
+          .then(response => response.json())
+          .then(data => {
+            const tablaDatos = document.getElementById('tablaDatos');
+            const mensajeContainer = document.getElementById('mensajeContainer');
+            tablaDatos.innerHTML = '';
+            mensajeContainer.innerHTML = '';
+    
+            const uniqueSolicitudIds = new Set();
+    
+            fetch('https://apis-soluciones-spin.run/solicitud_epp.php')
+              .then(response => response.json())
+              .then(solicitudesData => {
+                fetch('https://apis-soluciones-spin.run/obra.php')
+                  .then(response => response.json())
+                  .then(obrasData => {
+                    const obrasMap = new Map();
+                    obrasData.forEach(obra => {
+                      obrasMap.set(obra.id_obra, obra.nombre);
+                    });
+    
+                    const bodyTablaSolicitudes = document.getElementById('bodyTablaSolicitudes');
+                    bodyTablaSolicitudes.innerHTML = '';
+    
+                    let solicitudesEnEspera = 0;
+    
+                    solicitudesData.solicitudes.forEach(solicitud => {
+                      if (solicitud.status === 'en espera' && !uniqueSolicitudIds.has(solicitud.id_solicitud)) {
+                        uniqueSolicitudIds.add(solicitud.id_solicitud);
+    
+                        solicitudesEnEspera++;
+    
+                        const nombreObra = obrasMap.get(solicitud.id_obra) || 'Nombre no encontrado';
+    
+                        const trSolicitud = document.createElement('tr');
+                        trSolicitud.innerHTML = `
+                          <td>${solicitud.id_solicitud}</td>
+                          <td>${nombreObra}</td>
+                          <td>
+                            <button class="btn btn-primary" onclick="confirmarEntrega(${solicitud.id_solicitud})">Confirmar Entrega</button>
+                            <button class="btn btn-info" onclick="verDetalles(${solicitud.id_solicitud})" data-toggle="modal" data-target="#detallesSolicitudModal">Ver Más</button>
+                          </td>`;
+                        bodyTablaSolicitudes.appendChild(trSolicitud);
+                      }
+                    });
+    
+                    const notificationCount = document.getElementById('notification-count');
+                    notificationCount.textContent = solicitudesEnEspera;
+                  })
+                  .catch(error => {
+                    console.error('Error al cargar las obras:', error);
+                  });
+              })
+              .catch(error => {
+                console.error('Error al cargar las solicitudes:', error);
+              });
+    
+            data.forEach(row => {
+              const tr = document.createElement('tr');
+              tr.innerHTML = `
+                <td>${row.id_equipo}</td>
+                <td>${row.nombre_equipo}</td>
+                <td>${row.uso}</td>
+                <td>${row.stock_actual}</td>
+                <td>${row.stock_min}</td>
+                <td>${row.stock_max}</td>
+                <td>${row.precio}</td>`;
+              tablaDatos.appendChild(tr);
+    
+              if (parseInt(row.stock_actual) < 15 && parseInt(row.stock_actual) > 0) {
+                const alerta = document.createElement('div');
+                alerta.classList.add('alert', 'alert-warning', 'mt-3');
+                alerta.textContent = `El equipo ${row.nombre_equipo} tiene un stock bajo (${row.stock_actual}).`;
+                mensajeContainer.appendChild(alerta);
+              }
+    
+              if (parseInt(row.stock_actual) === 0) {
+                const alertaStockCero = document.createElement('div');
+                alertaStockCero.classList.add('alert', 'alert-danger', 'mt-3');
+                alertaStockCero.textContent = `¡Atención! El equipo ${row.nombre_equipo} está agotado.`;
+                mensajeContainer.appendChild(alertaStockCero);
+              }
+    
+              verificarStockMaximo(row);
+            });
+          })
+          .catch(error => {
+            console.error('Error al cargar los datos del almacén:', error);
+          });
+      }
+    
+      function agregarRegistro(data) {
+        fetch('https://apis-soluciones-spin.run/almacen_epp.php', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json; charset=UTF-8'
+            },
+            body: JSON.stringify(data)
+          })
+          .then(response => response.json())
+          .then(result => {
+            document.getElementById('mensaje').innerHTML = `
+              <div class="alert alert-success" role="alert">
+                ${result.message}
+              </div>`;
+    
+            setTimeout(function () {
+              document.getElementById('mensaje').innerHTML = '';
+            }, 3000);
+    
+            cargarDatos();
+            $('#formularioModalAgregar').modal('hide');
+          })
+          .catch(error => {
+            document.getElementById('mensaje').innerHTML = `
+              <div class="alert alert-danger" role="alert">
+                Error: ${error}
+              </div>`;
+          });
+      }
+    
+      document.getElementById('registroForm').addEventListener('submit', function (event) {
+        event.preventDefault();
+        const nombre_equipo = document.getElementById('nombre_equipo').value;
+        const uso = document.getElementById('uso').value;
+        const stock_actual = document.getElementById('stock_actual').value;
+        const stock_min = document.getElementById('stock_min').value;
+        const stock_max = document.getElementById('stock_max').value;
+        const precio = document.getElementById('precio').value;
+    
+        if (!nombre_equipo || !uso || !stock_actual || !stock_min || !stock_max || !precio) {
+          document.getElementById('mensaje').innerHTML = `
+            <div class="alert alert-danger" role="alert">
+              Por favor, complete todos los campos.
+            </div>`;
+          return;
+        }
+    
+        const data = {
+          nombre_equipo,
+          uso,
+          stock_actual,
+          stock_min,
+          stock_max,
+          precio
+        };
+    
+        agregarRegistro(data);
+      });
+    
+      document.getElementById('limpiarFormulario').addEventListener('click', function () {
+        document.getElementById('registroForm').reset();
+      });
+    
+      function mostrarTablaSolicitudes() {
+        const ventanaTablaSolicitudes = document.getElementById('ventanaTablaSolicitudes');
+        ventanaTablaSolicitudes.style.display = 'block';
+      }
+    
+      function cerrarTablaSolicitudes() {
+        const ventanaTablaSolicitudes = document.getElementById('ventanaTablaSolicitudes');
+        ventanaTablaSolicitudes.style.display = 'none';
+      }
+    
+      function confirmarEntrega(idSolicitud) {
+        fetch('https://apis-soluciones-spin.run/solicitud_epp.php', {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json; charset=UTF-8'
+          },
+          body: JSON.stringify({
+            id_solicitud: idSolicitud,
+            status: 'entregado'
+          })
+        })
+          .then(response => response.json())
+          .then(result => {
+            document.getElementById('mensaje').innerHTML = `
+              <div class="alert alert-success" role="alert">
+                ${result.message}
+              </div>`;
+    
+            setTimeout(function () {
+              document.getElementById('mensaje').innerHTML = '';
+            }, 3000);
+    
+            cargarDatos();
+          })
+          .catch(error => {
+            document.getElementById('mensaje').innerHTML = `
+              <div class="alert alert-danger" role="alert">
+                Error: ${error}
+              </div>`;
+          });
+      }
+       // Función verDetalles actualizada para mostrar los detalles en una tabla
+       function verDetalles(idSolicitud) {
+        const detallesSolicitudBody = document.getElementById('detallesSolicitudBody');
+        detallesSolicitudBody.innerHTML = 'Cargando detalles...';
+    
+        fetch(`https://apis-soluciones-spin.run/solicitud_epp.php?id_solicitud=${idSolicitud}`)
+          .then(response => response.json())
+          .then(data => {
+            if ('detalles_solicitud' in data) {
+              const detallesSolicitud = data.detalles_solicitud;
+    
+              if (detallesSolicitud.length > 0) {
+                let detallesHTML = '';
+    
+                detallesHTML += `
+                  <p><strong>ID de Solicitud:</strong> ${detallesSolicitud[0].id_solicitud || 'No disponible'}</p>
+                  <p><strong>ID de Obra:</strong> ${detallesSolicitud[0].id_obra || 'No disponible'}</p>
+                  <p><strong>Status:</strong> ${detallesSolicitud[0].status || 'No disponible'}</p>
+                  <p><strong>Fecha de Solicitud:</strong> ${detallesSolicitud[0].fecha || 'No disponible'}</p>
+                  <p><strong>Hora de Solicitud:</strong> ${detallesSolicitud[0].hora || 'No disponible'}</p>
+                  <table class="table table-bordered">
+                    <thead>
+                      <tr>
+                        <th>Nombre del Equipo</th>
+                        <th>Cantidad Solicitada</th>
+                      </tr>
+                    </thead>
+                    <tbody>`;
+    
+                detallesSolicitud.forEach(equipo => {
+                  detallesHTML += `
+                    <tr>
+                      <td>${equipo.nombre_equipo}</td>
+                      <td>${equipo.cantidad}</td>
+                    </tr>`;
+                });
+    
+                detallesHTML += `</tbody></table>`;
+    
+                detallesSolicitudBody.innerHTML = detallesHTML;
+                $('#detallesSolicitudModal').modal('show');
+              } else {
+                detallesSolicitudBody.innerHTML = 'No se encontraron detalles de equipos.';
+              }
+            } else {
+              detallesSolicitudBody.innerHTML = 'No se encontró la solicitud o no tiene detalles disponibles.';
+            }
+          })
+          .catch(error => {
+            console.error('Error al cargar los detalles de la solicitud:', error);
+            detallesSolicitudBody.innerHTML = 'Error al cargar los detalles de la solicitud.';
+          });
+      }
+      document.addEventListener('DOMContentLoaded', function () {
+        cargarDatos();
+      });
+    </script>
+    
+  </body>
+
+</html>
+          

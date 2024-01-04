@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <title>Soluciones Spin</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+  <style>
+    /* Estilos CSS*/
+    body {
+      padding-top: 56px;
+    }
+    
+    .content {
+      padding: 20px;
+    }
+    
+    .menu {
+      text-align: center;
+    }
+    
+    .btn-custom {
+      width: 350px;
+      padding: 13px 20px;
+      margin-bottom: 35px;
+      font-size: 1em;
+      background-color: #0374c5;
+    }
+    
+    .btn-gray {
+      background-color: gray;
+    }
+    
+    footer {
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+      background-color: #f8f9fa;
+      text-align: center;
+      padding: 10px;
+    }
+  </style>
+
+  <script>
+    function redirectTo(url) {
+      window.location.href = url;
+    }
+
+    function exitAction() {
+      window.location.href = 'login.html';
+    }
+  </script>
+</head>
+<body>
+  <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
+    <a class="navbar-brand" href="#">Soluciones Spin</a>
+  </nav>
+
+  <div class="container mt-5">
+    <div class="row">
+      <div class="col-md-12 text-center">
+        <h2>Bienvenido al Menú</h2>
+      </div>
+    </div>
+
+    <div class="row mt-3">
+      <div class="col-md-12">
+        <div class="menu">
+          <ul class="nav flex-column">
+            <li class="nav-item">
+              <button class="btn btn-primary btn-custom" onclick="redirectTo('asistencia_obra.html')">Asistencia_Obra</button>
+            </li>
+            <li class="nav-item">
+              <button class="btn btn-primary btn-custom" onclick="redirectTo('entregas_epp.html')">Entrega_EPP</button>
+            </li>
+            <li class="nav-item">
+              <button class="btn btn-primary btn-custom" onclick="redirectTo('solicitud_epp.html')">Solicitud_EPP</button>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="row mt-3">
+      <div class="col-md-9 offset-md-3">
+        <div id="content" class="content"></div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <button class="btn btn-secondary btn-custom btn-gray" onclick="exitAction()">Salir</button>
+  </footer>
+
+  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+</body>
+</html>

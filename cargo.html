@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aplicación de Registro de Cargos</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+</head>
+
+<body>
+    <div class="container mt-5">
+        <h1 class="mb-4">Registro de Cargos</h1>
+
+        <!-- Botón para abrir el modal de agregar cargo -->
+        <button type="button" class="btn btn-primary" onclick="showAddCargoForm()">
+            Agregar Cargo
+        </button>
+
+        <a href="sistemas.html" class="btn btn-secondary">Volver al Menú</a>
+
+        <!-- Modal para agregar o editar un cargo -->
+        <div class="modal fade" id="addCargoModal" tabindex="-1" role="dialog" aria-labelledby="addCargoModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="addCargoModalLabel">Agregar Nuevo Cargo</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <!-- Formulario para agregar o editar un cargo -->
+                        <form id="addCargoForm">
+                            <div class="form-group">
+                                <label for="nombre_add">Nombre Cargo:</label>
+                                <input type="text" class="form-control" id="nombre_add" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="actividades_add">Actividades:</label>
+                                <textarea class="form-control" id="actividades_add" required></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="tasa_add">Tasa:</label>
+                                <input type="number" class="form-control" id="tasa_add" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary" id="submitBtn">Agregar Cargo</button>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Lista de cargos en una tabla -->
+        <h2 class="mt-5">Cargos existentes</h2>
+        <table class="table table-bordered mt-3">
+            <thead>
+                <tr>
+                    <th>ID Cargo</th>
+                    <th>Nombre del Cargo</th>
+                    <th>Actividades</th>
+                    <th>Tasa</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody id="cargoList">
+                <!-- Los cargos se llenarán aquí -->
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Modal de confirmación para eliminar -->
+    <div class="modal fade" id="confirmDeleteModal" tabindex="-1" role="dialog"
+        aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="confirmDeleteModalLabel">Confirmar Eliminación</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    ¿Estás seguro de que deseas eliminar este cargo?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-danger" onclick="confirmDelete()">Eliminar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mensajes de éxito y error -->
+    <div class="container mt-3">
+        <div id="successMessage" class="alert alert-success" style="display: none; white-space: pre-line;"></div>
+        <div id="errorMessage" class="alert alert-danger" style="display: none; white-space: pre-line;"></div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+    <script>
+        let editIdCargo = null; // Variable para almacenar el id_cargo en edición
+
+        // Función para mostrar un mensaje durante 3 segundos
+        function displayMessage(messageElement, message) {
+            if (messageElement) {
+                messageElement.innerHTML = message;
+                messageElement.style.display = 'block';
+                setTimeout(() => {
+                    messageElement.style.display = 'none';
+                }, 3000);
+            }
+        }
+
+        // Mostrar formulario para agregar un cargo y ocultar el de editar
+        function showAddCargoForm() {
+            document.getElementById('addCargoForm').reset(); // Limpiar el formulario
+            document.getElementById('submitBtn').innerText = 'Agregar Cargo';
+            $('#addCargoModal').modal('show'); // Mostrar modal
+        }
+
+        // Mostrar formulario para editar un cargo y ocultar el de agregar
+        function showEditCargoForm() {
+            document.getElementById('submitBtn').innerText = 'Guardar Cambios';
+            $('#addCargoModal').modal('show'); // Mostrar modal
+        }
+
+        document.getElementById('addCargoForm').addEventListener('submit', function (event) {
+            event.preventDefault();
+
+            const nombre = document.getElementById('nombre_add').value;
+            const actividades = document.getElementById('actividades_add').value;
+            const tasa = document.getElementById('tasa_add').value;
+
+            // Validar que todos los campos estén llenos
+            if (!nombre || !actividades || !tasa) {
+                displayMessage(document.getElementById('errorMessage'), '<strong>Error:</strong> Todos los campos son obligatorios.');
+                return;
+            }
+
+            // Enviar datos al servidor
+            const url = editIdCargo ? 'https://apis-soluciones-spin.run/cargo.php' : `https://apis-soluciones-spin.run/cargo.php?id_cargo=${editIdCargo}`;
+            const method = editIdCargo ? 'PUT' : 'POST';
+
+            const payload = {
+                nombre,
+                actividades,
+                tasa: parseFloat(tasa)
+            };
+
+            // Incluir id_cargo en el cuerpo de la solicitud si está presente
+            if (editIdCargo) {
+                payload.id_cargo = editIdCargo;
+            }
+
+            fetch(url, {
+                method,
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(payload)
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.message) {
+                        const successMessage = editIdCargo ? 'Cargo actualizado con éxito.' : 'Cargo agregado con éxito.';
+                        displayMessage(document.getElementById('successMessage'), successMessage);
+                        $('#addCargoModal').modal('hide'); // Ocultar modal
+                        displayCargoList(); // Actualizar la lista de cargos
+                    } else if (data.error) {
+                        displayMessage(document.getElementById('errorMessage'), `<strong>Error:</strong> ${data.error}`);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    displayMessage(document.getElementById('errorMessage'), '<strong>Error:</strong> Hubo un problema al procesar la solicitud.');
+                })
+                .finally(() => {
+                    // Limpiar el id_cargo en edición
+                    editIdCargo = null;
+                });
+        });
+
+        function confirmDelete() {
+            const id_cargo = editIdCargo;
+
+            if (!id_cargo) {
+                console.error('Error: No se proporcionó un ID de cargo válido para eliminar.');
+                return;
+            }
+
+            // Enviar solicitud de eliminación al servidor utilizando el método DELETE
+            fetch(`https://apis-soluciones-spin.run/cargo.php?id_cargo=${id_cargo}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    id_cargo
+                })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.message) {
+                        displayMessage(document.getElementById('successMessage'), 'Cargo eliminado con éxito.', 'success');
+                        displayCargoList(); // Actualizar la lista de cargos
+                    } else if (data.error) {
+                        displayMessage(document.getElementById('errorMessage'), `<strong>Error:</strong> ${data.error}`);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    displayMessage(document.getElementById('errorMessage'), '<strong>Error:</strong> Hubo un problema al eliminar el cargo.', 'danger');
+                })
+                .finally(() => {
+                    // Ocultar el modal después de la confirmación o error
+                    $('#confirmDeleteModal').modal('hide');
+                });
+        }
+
+        // Función para obtener y mostrar la lista de cargos
+        function displayCargoList() {
+            fetch('https://apis-soluciones-spin.run/cargo.php')
+                .then(response => response.json())
+                .then(data => {
+                    const cargoList = document.getElementById('cargoList');
+                    cargoList.innerHTML = ''; // Limpiar la lista antes de actualizar
+
+                    if (data.cargos) {
+                        data.cargos.forEach(cargo => {
+                            const row = cargoList.insertRow();
+                            row.innerHTML = `<td>${cargo.id_cargo}</td>
+                                        <td>${cargo.nombre}</td>
+                                        <td>${cargo.actividades}</td>
+                                        <td>${cargo.tasa}</td>
+                                        <td>
+                                            <button class="btn btn-info btn-sm" onclick="editCargo(${cargo.id_cargo}, '${cargo.nombre}', '${cargo.actividades}', ${cargo.tasa})">Editar</button>
+                                            <button class="btn btn-danger btn-sm" onclick="deleteCargo(${cargo.id_cargo})">Eliminar</button>
+                                        </td>`;
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    displayMessage(document.getElementById('errorMessage'), '<strong>Error:</strong> Hubo un problema al obtener la lista de cargos.', 'danger');
+                });
+        }
+
+        // Función para editar un cargo
+        function editCargo(id_cargo, nombre, actividades, tasa) {
+            document.getElementById('nombre_add').value = nombre;
+            document.getElementById('actividades_add').value = actividades;
+            document.getElementById('tasa_add').value = tasa;
+
+            showEditCargoForm(); // Mostrar formulario de editar
+            editIdCargo = id_cargo; // Guardar el id_cargo en la variable global
+        }
+
+        function deleteCargo(id_cargo) {
+            editIdCargo = id_cargo; // Guardar el id_cargo en la variable global
+            // Mostrar modal de confirmación
+            $('#confirmDeleteModal').modal('show');
+        }
+
+        // Mostrar la lista de cargos al cargar la página
+        displayCargoList();
+    </script>
+
+</body>
+
+</html>

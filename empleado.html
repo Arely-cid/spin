@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulario de Empleados</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+</head>
+
+<body>
+
+    <div class="container mt-5">
+        <h1 class="mb-4">Empleados</h1>
+        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addEmpleadoModal">Agregar
+            Empleado</button>
+        <div class="modal fade" id="addEmpleadoModal" tabindex="-1" role="dialog" aria-labelledby="addEmpleadoModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        
+                    </div>
+                    <div class="modal-body">
+                        <form id="addEmpleadoForm">
+                            <div class="form-group">
+                                <label for="clave_qr">QR del Empleado:</label>
+                                <input type="text" class="form-control" id="clave_qr" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="nombre">Nombre:</label>
+                                <input type="text" class="form-control" id="nombre" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="apell_pat">Apellido Paterno:</label>
+                                <input type="text" class="form-control" id="apell_pat" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="apell_mat">Apellido Materno:</label>
+                                <input type="text" class="form-control" id="apell_mat" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="nss">NSS:</label>
+                                <input type="text" class="form-control" id="nss" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="id_cargo">ID de Cargo:</label>
+                                <input type="text" class="form-control" id="id_cargo" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Status:</label>
+                                <div class="form-check">
+                                    <input type="radio" class="form-check-input" id="status1" name="status" value="1">
+                                    <label class="form-check-label" for="status1">Activo</label>
+                                </div>
+                                <div class="form-check">
+                                    <input type="radio" class="form-check-input" id="status0" name="status" value="0">
+                                    <label class="form-check-label" for="status0">Inactivo</label>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="es_administrador">Es Administrador:</label>
+                                <div class="form-check">
+                                    <input type="radio" class="form-check-input" id="adminSi" name="es_administrador" value="1">
+                                    <label class="form-check-label" for="adminSi">Sí</label>
+                                </div>
+                                <div class="form-check">
+                                    <input type="radio" class="form-check-input" id="adminNo" name="es_administrador" value="0">
+                                    <label class="form-check-label" for="adminNo">No</label>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="es_de_obra">Es de Obra:</label>
+                                <div class="form-check">
+                                    <input type="radio" class="form-check-input" id="obraSi" name="es_de_obra" value="1">
+                                    <label class="form-check-label" for="obraSi">Sí</label>
+                                </div>
+                                <div class="form-check">
+                                    <input type="radio" class="form-check-input" id="obraNo" name="es_de_obra" value="0">
+                                    <label class="form-check-label" for="obraNo">No</label>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="vacaciones">Vacaciones:</label>
+                                <div class="form-check">
+                                    <input type="radio" class="form-check-input" id="vacacionesSi" name="vacaciones" value="1">
+                                    <label class="form-check-label" for="vacacionesSi">Sí</label>
+                                </div>
+                                <div class="form-check">
+                                    <input type="radio" class="form-check-input" id="vacacionesNo" name="vacaciones" value="0">
+                                    <label class="form-check-label" for="vacacionesNo">No</label>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="incapacidad">Incapacidad:</label>
+                                <div class="form-check">
+                                    <input type="radio" class="form-check-input" id="incapacidadSi" name="incapacidad" value="1">
+                                    <label class="form-check-label" for="incapacidadSi">Sí</label>
+                                </div>
+                                <div class="form-check">
+                                    <input type="radio" class="form-check-input" id="incapacidadNo" name="incapacidad" value="0">
+                                    <label class="form-check-label" for="incapacidadNo">No</label>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Agregar</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <a href="sistemas.html" class="btn btn-secondary">Volver al Menú</a>
+
+        <table class="table table-striped table-bordered mt-4">
+            <thead class="table table-striped">
+                <tr>
+                    <th>QR del Empleado</th>
+                    <th>Nombre</th>
+                    <th>Apellido Paterno</th>
+                    <th>Apellido Materno</th>
+                    <th>NSS</th>
+                    <th>ID de Cargo</th>
+                    <th>Administrador</th>
+                    <th>De obra</th>
+                    <th>Vacaciones</th>
+                    <th>Incapacidad</th>
+                    <th>Status</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody id="empleadoTableBody"></tbody>
+        </table>
+
+        <div id="message" class="alert alert-success mt-3" style="display: none;"></div>
+
+        <div class="modal fade" id="editEmpleadoModal" tabindex="-1" role="dialog"
+            aria-labelledby="editEmpleadoModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="editEmpleadoModalLabel">Editar Empleado</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="editEmpleadoForm">
+                            <input type="hidden" id="editQREmpleado">
+                            <div class="form-group">
+                                <label for="editQREmpleado">QR Empleado:</label>
+                                <input type="text" class="form-control" id="editQREmpleado" readonly required>
+                            </div>
+                            <div class="form-group">
+                                <label for="editNombreEmpleado">Nombre:</label>
+                                <input type="text" class="form-control" id="editNombreEmpleado" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="editapell_pat">Apellido Paterno:</label>
+                                <input type="text" class="form-control" id="editapell_pat" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="editapell_mat">Apellido Materno:</label>
+                                <input type="text" class="form-control" id="editapell_mat" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="editNSS">NSS:</label>
+                                <input type="text" class="form-control" id="editNSS" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="editIDCargo">ID de Cargo:</label>
+                                <input type="text" class="form-control" id="editIDCargo" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Status:</label>
+                                <div class="form-check">
+                                    <input type="radio" class="form-check-input" id="editStatus1" name="editStatus"
+                                        value="1">
+                                    <label class="form-check-label" for="editStatus1">Activo</label>
+                                </div>
+                                <div class="form-check">
+                                    <input type="radio" class="form-check-input" id="editStatus0" name="editStatus"
+                                        value="0">
+                                    <label class="form-check-label" for="editStatus0">Inactivo</label>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="editEsAdministrador">Es Administrador:</label>
+                                <div class="form-check">
+                                    <input type="radio" class="form-check-input" id="editAdminSi" name="editEsAdministrador" value="1">
+                                    <label class="form-check-label" for="editAdminSi">Sí</label>
+                                </div>
+                                <div class="form-check">
+                                    <input type="radio" class="form-check-input" id="editAdminNo" name="editEsAdministrador" value="0">
+                                    <label class="form-check-label" for="editAdminNo">No</label>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="editEsDeObra">Es de Obra:</label>
+                                <div class="form-check">
+                                    <input type="radio" class="form-check-input" id="editObraSi" name="editEsDeObra" value="1">
+                                    <label class="form-check-label" for="editObraSi">Sí</label>
+                                </div>
+                                <div class="form-check">
+                                    <input type="radio" class="form-check-input" id="editObraNo" name="editEsDeObra" value="0">
+                                    <label class="form-check-label" for="editObraNo">No</label>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="editVacaciones">Vacaciones:</label>
+                                <div class="form-check">
+                                    <input type="radio" class="form-check-input" id="editVacacionesSi" name="editVacaciones" value="1">
+                                    <label class="form-check-label" for="editVacacionesSi">Sí</label>
+                                </div>
+                                <div class="form-check">
+                                    <input type="radio" class="form-check-input" id="editVacacionesNo" name="editVacaciones" value="0">
+                                    <label class="form-check-label" for="editVacacionesNo">No</label>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="editIncapacidad">Incapacidad:</label>
+                                <div class="form-check">
+                                    <input type="radio" class="form-check-input" id="editIncapacidadSi" name="editIncapacidad" value="1">
+                                    <label class="form-check-label" for="editIncapacidadSi">Sí</label>
+                                </div>
+                                <div class="form-check">
+                                    <input type="radio" class="form-check-input" id="editIncapacidadNo" name="editIncapacidad" value="0">
+                                    <label class="form-check-label" for="editIncapacidadNo">No</label>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+
+        <script>
+            $(document).ready(function () {
+                const addEmpleadoForm = $('#addEmpleadoForm');
+                const editEmpleadoForm = $('#editEmpleadoForm');
+                const empleadoTableBody = $('#empleadoTableBody');
+                const messageDiv = $('#message');
+        
+                function cargarEmpleados() {
+                    $.ajax({
+                        url: 'https://apis-soluciones-spin.run/empleado.php',
+                        type: 'GET',
+                        success: function (data) {
+                            empleadoTableBody.empty();
+                            data.forEach(empleado => {
+                                const statusLabel = empleado.status === '1' ? 'Activo' : 'Baja';
+                                const esAdminLabel = empleado.es_administrador === '1' ? 'Sí' : 'No';
+                                const esDeObraLabel = empleado.es_de_obra === '1' ? 'Sí' : 'No';
+                                const vacacionesLabel = empleado.vacaciones === '1' ? 'Sí' : 'No';
+                                const incapacidadLabel = empleado.incapacidad === '1' ? 'Sí' : 'No';
+        
+                                empleadoTableBody.append(
+                                    `<tr>
+                                        <td>${empleado.clave_qr}</td>
+                                        <td>${empleado.nombre}</td>
+                                        <td>${empleado.apell_pat}</td>
+                                        <td>${empleado.apell_mat}</td>
+                                        <td>${empleado.nss}</td>
+                                        <td>${empleado.id_cargo}</td>
+                                        <td>${esAdminLabel}</td>
+                                        <td>${esDeObraLabel}</td>
+                                        <td>${vacacionesLabel}</td>
+                                        <td>${incapacidadLabel}</td>
+                                        <td>${statusLabel}</td>
+                                        <td>
+                                            <button class="btn btn-primary btnEditar" data-clave_qr="${empleado.clave_qr}" data-nombre="${empleado.nombre}" data-apell_pat="${empleado.apell_pat}" data-apell_mat="${empleado.apell_mat}" data-nss="${empleado.nss}" data-id_cargo="${empleado.id_cargo}" data-es_administrador="${empleado.es_administrador}" data-es_de_obra="${empleado.es_de_obra}" data-vacaciones="${empleado.vacaciones}" data-incapacidad="${empleado.incapacidad}" data-status="${empleado.status}">Editar</button>
+                                        </td>
+                                    </tr>`
+                                );
+                            });
+                        },
+                        complete: function () {
+                            // Cerrar modal después de cargar los empleados
+                            $('#addEmpleadoModal').modal('hide');
+                        },
+                        
+                        error: function () {
+                            showMessage('Error al cargar los empleados.', 'danger');
+                        }
+                    });
+                }
+        
+                cargarEmpleados();
+        
+                function showMessage(message, type) {
+                    // Cambio en la clase de alert según el tipo de mensaje
+                    messageDiv.removeClass().addClass(`alert alert-${type}`).text(message).fadeIn();
+                    setTimeout(() => {
+                        messageDiv.fadeOut();
+                    }, 3000);
+                }
+        
+                $('#btnAgregarEmpleado').click(function () {
+                    $('#addEmpleadoModal').modal('show');
+                });
+        
+                addEmpleadoForm.submit(function (event) {
+                    event.preventDefault();
+        
+                    const clave_qr = $('#clave_qr').val();
+                    const nombre = $('#nombre').val();
+                    const apell_pat = $('#apell_pat').val();
+                    const apell_mat = $('#apell_mat').val();
+                    const nss = $('#nss').val();
+                    const id_cargo = $('#id_cargo').val();
+                    const es_administrador = $('input[name="es_administrador"]:checked').val();
+                    const es_de_obra = $('input[name="es_de_obra"]:checked').val();
+                    const vacaciones = $('input[name="vacaciones"]:checked').val();
+                    const incapacidad = $('input[name="incapacidad"]:checked').val();
+                    const status = $('input[name="status"]:checked').val();
+        
+                    if (clave_qr && nombre && apell_pat && apell_mat && nss && id_cargo && es_administrador !== undefined && es_de_obra !== undefined && vacaciones !== undefined && incapacidad !== undefined && status !== undefined) {
+                        $.ajax({
+                            url: 'https://apis-soluciones-spin.run/empleado.php',
+                            type: 'POST',
+                            contentType: 'application/json',
+                            data: JSON.stringify({
+                                clave_qr: clave_qr,
+                                nombre: nombre,
+                                apell_pat: apell_pat,
+                                apell_mat: apell_mat,
+                                nss: nss,
+                                id_cargo: id_cargo,
+                                es_administrador: es_administrador,
+                                es_de_obra: es_de_obra,
+                                vacaciones: vacaciones,
+                                incapacidad: incapacidad,
+                                status: status
+                            }),
+                             success: function (response) {
+                                if (response.success) {
+                                    showMessage('Empleado agregado con éxito.', 'success');
+                                    cargarEmpleados();
+                                    $('#addEmpleadoModal').modal('hide');
+                                    addEmpleadoForm[0].reset();
+                                } else {
+                                    showMessage(response.message || 'Error al agregar el empleado.', 'danger');
+                                }
+                            },
+                            error: function () {
+                                showMessage('Error al agregar el empleado.', 'danger');
+                            }
+                        });
+                    } else {
+                        showMessage('Todos los campos son obligatorios.', 'warning');
+                    }
+                });
+        
+                $('#empleadoTableBody').on('click', '.btnEditar', function () {
+                    const empleadoData = {
+                        clave_qr: $(this).data('clave_qr'),
+                        nombre: $(this).data('nombre'),
+                        apell_pat: $(this).data('apell_pat'),
+                        apell_mat: $(this).data('apell_mat'),
+                        nss: $(this).data('nss'),
+                        id_cargo: $(this).data('id_cargo'),
+                        es_administrador: $(this).data('es_administrador'),
+                        es_de_obra: $(this).data('es_de_obra'),
+                        vacaciones: $(this).data('vacaciones'),
+                        incapacidad: $(this).data('incapacidad'),
+                        status: $(this).data('status')
+                    };
+        
+                    fillEditForm(empleadoData);
+                    $('#editEmpleadoModal').modal('show');
+                });
+        
+                function fillEditForm(empleadoData) {
+                    $('#editQREmpleado').val(empleadoData.clave_qr).prop('readonly', true);
+                    $('#editNombreEmpleado').val(empleadoData.nombre);
+                    $('#editapell_pat').val(empleadoData.apell_pat);
+                    $('#editapell_mat').val(empleadoData.apell_mat);
+                    $('#editNSS').val(empleadoData.nss);
+                    $('#editIDCargo').val(empleadoData.id_cargo);
+                    $('input[name="editEsAdministrador"]').val([empleadoData.es_administrador]);
+                    $('input[name="editEsDeObra"]').val([empleadoData.es_de_obra]);
+                    $('input[name="editVacaciones"]').val([empleadoData.vacaciones]);
+                    $('input[name="editIncapacidad"]').val([empleadoData.incapacidad]);
+        
+                    $(`input[name="editStatus"][value="${empleadoData.status}"]`).prop('checked', true);
+                }
+        
+                editEmpleadoForm.submit(function (event) {
+                    event.preventDefault();
+        
+                    const clave_qr = $('#editQREmpleado').val();
+                    const nombre = $('#editNombreEmpleado').val();
+                    const apell_pat = $('#editapell_pat').val();
+                    const apell_mat = $('#editapell_mat').val();
+                    const nss = $('#editNSS').val();
+                    const id_cargo = $('#editIDCargo').val();
+                    const es_administrador = $('input[name="editEsAdministrador"]:checked').val();
+                    const es_de_obra = $('input[name="editEsDeObra"]:checked').val();
+                    const vacaciones = $('input[name="editVacaciones"]:checked').val();
+                    const incapacidad = $('input[name="editIncapacidad"]:checked').val();
+                    const status = $('input[name="editStatus"]:checked').val();
+        
+                    if (clave_qr && nombre && apell_pat && apell_mat && nss && id_cargo && es_administrador !== undefined && es_de_obra !== undefined && vacaciones !== undefined && incapacidad !== undefined && status !== undefined) {
+                        updateEmpleado({
+                            clave_qr: clave_qr,
+                            nombre: nombre,
+                            apell_pat: apell_pat,
+                            apell_mat: apell_mat,
+                            nss: nss,
+                            id_cargo: id_cargo,
+                            es_administrador: es_administrador,
+                            es_de_obra: es_de_obra,
+                            vacaciones: vacaciones,
+                            incapacidad: incapacidad,
+                            status: status
+                        });
+                    } else {
+                        showMessage('Todos los campos son obligatorios.', 'warning');
+                    }
+                });
+        
+                function updateEmpleado(empleadoData) {
+                    $.ajax({
+                        url: 'https://apis-soluciones-spin.run/empleado.php',
+                        type: 'PUT',
+                        contentType: 'application/json',
+                        data: JSON.stringify(empleadoData),
+                        success: function (response) {
+                            if (response.success) {
+                                showMessage('Empleado editado con éxito.', 'success');
+                                cargarEmpleados();
+                                $('#editEmpleadoModal').modal('hide');
+                            } else {
+                                showMessage(response.message || 'Error al editar el empleado.', 'danger');
+                                $('#editEmpleadoModal').modal('hide');
+                            }
+                        },
+                        error: function () {
+                            showMessage('Error al editar el empleado.', 'danger');
+                            $('#editEmpleadoModal').modal('hide');
+                        }
+                    });
+                }
+            });
+         
+        </script>        
+
+</body>
+
+</html>

@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Formulario EPP</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
+  <script src="https://rawgit.com/schmich/instascan-builds/master/instascan.min.js"></script>
+
+  <style>
+    body {
+      background: #f8f9fa;
+    }
+
+    .navbar {
+      border-bottom: 1px solid #ddd;
+    }
+
+    .btn-primary {
+      background-color: #007bff;
+      border-color: #007bff;
+    }
+
+    .card {
+      border: none;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .card-body {
+      padding: 2rem;
+    }
+  </style>
+</head>
+
+<body>
+  <nav class="navbar navbar-dark bg-dark">
+    <div class="container">
+      <a class="navbar-brand" href="#">
+        <i class="fas fa-hard-hat"></i> Formulario EPP
+      </a>
+    </div>
+  </nav>
+
+  <main class="container mt-4">
+    <div class="row">
+      <div class="col-md-6 mx-auto">
+        <div class="card">
+          <div class="card-body">
+            <h1 class="text-center mb-4"><i class="fas fa-clipboard-check"></i> Registro Entrega</h1>
+            <form id="entregaForm">
+              <div class="form-group">
+                <label for="id_solicitud">ID Solicitud</label>
+                <input type="text" class="form-control" placeholder="Ingrese ID Solicitud" id="id_solicitud" required onchange="obtenerEquiposPorSolicitud()">
+
+              </div>
+              <div class="form-group">
+                <label for="clave_qr">Clave QR</label>
+                <div class="input-group">
+                  <input type="text" class="form-control" placeholder="Escanea la Clave QR" id="clave_qr" required readonly>
+                  <div class="input-group-append">
+                    <button class="btn btn-outline-secondary" type="button" onclick="iniciarEscaneo()">
+                      <i class="fas fa-qrcode"></i> Escanear
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="id_equipo">Nombre Equipo</label>
+                <select class="form-control" id="id_equipo" required>
+                  <!-- Las opciones se rellenarán dinámicamente desde la API -->
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="fecha">Fecha</label>
+                <input type="date" class="form-control" id="fecha" required readonly>
+              </div>
+              <button class="btn btn-primary btn-lg btn-block" type="button" onclick="agregarEntrega()">
+                <i class="fas fa-check"></i> Registrar
+              </button>
+              
+              <button class="btn btn-success btn-lg btn-block" type="button" onclick="limpiarFormulario()">
+                <i class="fas fa-eraser"></i> Limpiar
+              </button>
+              <div class="mt-4 text-center">
+                <a href="menu_epp.html" class="btn btn-secondary btn-block">--Volver--</a>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/js/all.min.js"></script>
+
+  <script>
+    const formulario = document.getElementById('entregaForm');
+    const urlAPI = 'https://apis-soluciones-spin.run/entrega.php';
+    const urlAlmacenAPI = 'https://apis-soluciones-spin.run/solicitud_epp.php';
+  
+    // Llenar automáticamente el campo de fecha con la fecha actual
+    document.getElementById('fecha').valueAsDate = new Date();
+  
+    function obtenerEquiposPorSolicitud() {
+      const id_solicitud = document.getElementById('id_solicitud').value;
+  
+      fetch(urlAlmacenAPI + '?id_solicitud=' + id_solicitud)
+        .then(response => response.json())
+        .then(data => {
+          const idEquipoSelect = document.getElementById('id_equipo');
+          idEquipoSelect.innerHTML = ''; // Limpiamos el select actual
+  
+          data.detalles_solicitud.forEach(detalle => {
+            const option = document.createElement('option');
+            option.value = detalle.id_equipo;
+            option.text = detalle.nombre_equipo;
+            idEquipoSelect.add(option);
+          });
+        })
+        .catch(error => console.error('Error:', error));
+    }
+  
+    function agregarEntrega() {
+      const id_solicitud = document.getElementById('id_solicitud').value;
+      const clave_qr = document.getElementById('clave_qr').value;
+      const id_equipo = document.getElementById('id_equipo').value;
+      const fecha = document.getElementById('fecha').value;
+  
+      const data = {
+        id_solicitud,
+        clave_qr,
+        id_equipo,
+        fecha
+      };
+  
+      fetch(urlAPI, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      })
+        .then(response => response.json())
+        .then(data => {
+          if (data.message === 'Agregado correctamente.') {
+            alertMessage('success', data.message);
+            limpiarFormulario();
+          } else {
+            alertMessage('danger', data.message);
+          }
+        })
+        .catch((error) => {
+          console.error('Error:', error);
+          alertMessage('danger', 'Hubo un error al procesar la solicitud.');
+        });
+    }
+  
+    function alertMessage(type, message) {
+      const alertContainer = document.createElement('div');
+      if (type === 'success') {
+        alertContainer.classList.add('alert', 'alert-success');
+      } else {
+        alertContainer.classList.add('alert', `alert-${type}`);
+      }
+      alertContainer.textContent = message;
+  
+      const form = document.getElementById('entregaForm');
+      form.prepend(alertContainer);
+  
+      setTimeout(() => {
+        alertContainer.remove();
+      }, 5000);
+    }
+  
+    function limpiarFormulario() {
+      formulario.reset();
+      window.location.reload();
+    }
+  
+    // Función para iniciar el escaneo
+    function iniciarEscaneo() {
+      const scanner = new Instascan.Scanner({
+        video: document.getElementById('preview'),
+      });
+  
+      scanner.addListener('scan', function (content) {
+        document.getElementById('clave_qr').value = content;
+        document.getElementById('clave_qr').readOnly = true; // Deshabilitar edición después del escaneo
+        scanner.stop(); // Detener la cámara después de un escaneo exitoso
+      });
+  
+      Instascan.Camera.getCameras().then(function (cameras) {
+        if (cameras.length > 0) {
+          scanner.start(cameras[0]);
+        } else {
+          console.error('No hay cámaras disponibles.');
+        }
+      }).catch(function (e) {
+        console.error(e);
+      });
+    }
+  </script>
+  
+</body>
+
+</html>

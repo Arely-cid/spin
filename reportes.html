@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menú de Reportes</title>
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+
+</head>
+<body>
+    <div class="container text-center mt-5">
+        <h1>SOLUCIONES SPIN</h1>
+        <br>
+        <h5>Bienvenido al Menú de Reportes</h5>
+
+        <div class="row justify-content-center mt-5">
+            <div class="col-md-6">
+                <button class="btn btn-primary btn-lg btn-block" onclick="window.location.href='reporte-suma-horas.php'">Reporte Total de Horas</button>
+                <button class="btn btn-primary btn-lg btn-block" onclick="window.location.href='reporte-asistencia.php'">Reporte Asistencia Obra</button>
+                <button class="btn btn-primary btn-lg btn-block" onclick="window.location.href='ReporteObras.php'">Entrega de EPP a Obras</button>
+                <button class="btn btn-primary btn-lg btn-block" onclick="window.location.href='ReporteEmpleados.php'">Entrega de EPP a Empleados</button>
+            </div>
+        </div>
+    </div>
+
+    <footer class="fixed-bottom bg-dark text-white text-center py-2">
+        <button class="btn btn-danger btn-sm" onclick="redirectToLogin()">Salir</button>
+    </footer>
+
+    <script>
+        function redirectToLogin() {
+          if (confirm('¿Estás seguro de que deseas salir?')) {
+            window.location.href = 'login.html';
+          }
+        }
+      </script>
+</body>
+</html>

@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Administradores</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+</head>
+
+<body>
+    <div class="container mt-5">
+        <h1 class="mb-4">Administradores</h1>
+        <button class="btn btn-primary" data-toggle="modal" data-target="#addAdminModal">Agregar Administrador</button>
+        <a href="sistemas.html" class="btn btn-secondary">Volver al Menú </a>
+        <!-- Modal para agregar administradores -->
+        <div class="modal fade" id="addAdminModal" tabindex="-1" role="dialog" aria-labelledby="addAdminModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="addAdminModalLabel">Agregar Administrador</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="addAdminForm">
+                            <div class="form-group">
+                                <label for="rol">Rol</label>
+                                <input type="text" class="form-control" id="rol" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="clave_qr">Clave QR</label>
+                                <input type="text" class="form-control" id="clave_qr" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="usuario">Usuario</label>
+                                <input type="text" class="form-control" id="usuario" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="contrasena">Contraseña</label>
+                                <input type="text" class="form-control" id="contrasena" required>
+                            </div>
+
+                            <button type="button" class="btn btn-primary" id="btnAgregar">Agregar</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <table class="table table-striped table-bordered mt-4">
+            <thead class="table table-striped">
+                <tr>
+                    <th>ID</th>
+                    <th>Rol</th>
+                    <th>Clave QR</th>
+                    <th>Usuario</th>
+                    <th>Contraseña</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody id="adminTableBody"></tbody>
+        </table>
+
+        <div id="adminMessage" class="alert alert-success mt-3" style="display: none;"></div>
+
+        <!-- Modal para editar administradores -->
+        <div class="modal fade" id="editAdminModal" tabindex="-1" role="dialog" aria-labelledby="editAdminModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="editAdminModalLabel">Editar Administrador</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="editAdminForm">
+                            <input type="hidden" id="editIdAdmin" name="editIdAdmin">
+                            <div class="form-group">
+                                <label for="editRol">Rol</label>
+                                <input type="text" class="form-control" id="editRol" name="editRol" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="editClaveQR">Clave QR</label>
+                                <input type="text" class="form-control" id="editClaveQR" name="editClaveQR" readonly>
+                            </div>
+                            <div class="form-group">
+                                <label for="editUsuario">Usuario</label>
+                                <input type="text" class="form-control" id="editUsuario" name="editUsuario" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="editContrasena">Contraseña</label>
+                                <input type="text" class="form-control" id="editContrasena" name="editContrasena" required readonly>
+                            </div>
+                            <button type="button" class="btn btn-primary" id="btnGuardarCambios">Guardar Cambios</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+
+        <script>
+            $(document).ready(function () {
+                const addAdminForm = $('#addAdminForm');
+                const editAdminForm = $('#editAdminForm');
+                const adminTableBody = $('#adminTableBody');
+                const messageDiv = $('#adminMessage');
+
+                // Función para cargar los administradores desde la API
+                function cargarAdmins() {
+                    $.ajax({
+                        url: 'https://apis-soluciones-spin.run/administrador.php',
+                        type: 'GET',
+                        success: function (data) {
+                            adminTableBody.empty();
+                            data.forEach(administrador => {
+                                adminTableBody.append(
+                                    `<tr>
+                                        <td>${administrador.id_administrador}</td>
+                                        <td>${administrador.rol}</td>
+                                        <td>${administrador.clave_qr}</td>
+                                        <td>${administrador.usuario}</td>
+                                        <td>${administrador.contrasena}</td>
+                                        <td>
+                                            <button class="btn btn-primary btnEditar" data-id_administrador="${administrador.id_administrador}" data-rol="${administrador.rol}" data-clave_qr="${administrador.clave_qr}" data-usuario="${administrador.usuario}" data-contrasena="${administrador.contrasena}" >Editar</button>
+                                        </td>
+                                    </tr>`
+                                );
+                            });
+                        },
+                        error: function (error) {
+                            showMessage(`Error al cargar los administradores: ${error.statusText}`, 'danger');
+                        }
+                    });
+                }
+
+                // Cargar los administradores existentes al cargar la página
+                cargarAdmins();
+
+                // Manejar la solicitud de agregar administrador
+                $('#btnAgregar').click(function () {
+                    const rol = $('#rol').val();
+                    const clave_qr = $('#clave_qr').val();
+                    const usuario = $('#usuario').val();
+                    const contrasena = $('#contrasena').val();
+
+                    $.ajax({
+                        url: 'https://apis-soluciones-spin.run/administrador.php',
+                        type: 'POST',
+                        contentType: 'application/json',
+                        data: JSON.stringify({
+                            rol: rol,
+                            clave_qr: clave_qr,
+                            usuario: usuario,
+                            contrasena: contrasena
+                        }),
+                        success: function () {
+                            showMessage('Administrador agregado con éxito.', 'success');
+                            cargarAdmins();
+                            $('#addAdminModal').modal('hide');
+                        },
+                        error: function (error) {
+                            showMessage(`Error al agregar el administrador: ${error.statusText}`, 'danger');
+                        }
+                    });
+                });
+
+                // Manejar la solicitud de editar administrador
+                $(document).on('click', '.btnEditar', function () {
+                    const id_administrador = $(this).data('id_administrador');
+                    const rol = $(this).data('rol');
+                    const clave_qr = $(this).data('clave_qr');
+                    const usuario = $(this).data('usuario');
+                    const contrasena = $(this).data('contrasena');
+
+                    // Llenar los campos del formulario de edición
+                    $('#editIdAdmin').val(id_administrador).prop('readonly', true);
+                    $('#editClaveQR').val(clave_qr).prop('readonly', true);
+                    $('#editRol').val(rol);
+                    $('#editUsuario').val(usuario);
+                    $('#editContrasena').val(contrasena);
+
+                    // Mostrar el modal de edición
+                    $('#editAdminModal').modal('show');
+                });
+
+                
+                $('#btnGuardarCambios').click(function () {
+                    const id_administrador = $('#editIdAdmin').val();
+                    const rol = $('#editRol').val();
+                    const usuario = $('#editUsuario').val();
+                    const contrasena = $('#editContrasena').val();
+                
+                    if (id_administrador && rol && usuario) {
+                        $.ajax({
+                            url: `https://apis-soluciones-spin.run/administrador.php?id=${id_administrador}`,
+                            type: 'PUT',
+                            contentType: 'application/json',
+                            data: JSON.stringify({
+                                id_administrador: id_administrador, // Agrega esta línea para enviar el id_administrador
+                                rol: rol,
+                                usuario: usuario,
+                                contrasena: contrasena
+                            }),
+                            success: function () {
+                                showMessage('Administrador editado con éxito.', 'success');
+                                cargarAdmins();
+                                $('#editAdminModal').modal('hide');
+                            },
+                            error: function (error) {
+                                showMessage(`Error al editar el administrador: ${error.responseText}`, 'danger');
+                                $('#editAdminModal').modal('hide');
+                            }
+                        });
+                    } else {
+                        showMessage('Todos los campos son obligatorios.', 'warning');
+                    }
+                });
+                
+                // Función para mostrar un mensaje con Bootstrap alert
+                function showMessage(message, type) {
+                    const adminMessageDiv = $('#adminMessage');
+                    adminMessageDiv.removeClass().addClass(`alert alert-${type}`).text(message).fadeIn();
+                    setTimeout(() => {
+                        adminMessageDiv.fadeOut();
+                    }, 3000);
+                }
+            });
+        </script>
+    </body>
+
+</html>

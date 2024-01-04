@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registros de Entradas</title>
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
+
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+
+        .container {
+            margin-top: 30px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .logo {
+            width: 130px;
+            height: auto;
+        }
+
+        .app-title {
+            display: flex;
+            align-items: center;
+        }
+
+        .table-responsive {
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        #alertContainer {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <div class="container">
+
+        <div class="header">
+            <div class="app-title">
+                <img src="LOGO-spin.png" alt="LOGO-spin" class="logo">
+                <h2 class="ml-3">
+                    <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-box-arrow-in-right"
+                        fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                        <path fill-rule="evenodd"
+                            d="M8.146 11.354a.5.5 0 0 1 0-.708L10.793 8 8.146 5.354a.5.5 0 1 1 .708-.708l3 3a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708 0z" />
+                        <path fill-rule="evenodd" d="M1 8a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9A.5.5 0 0 1 1 8z" />
+                        <path fill-rule="evenodd"
+                            d="M13.5 14.5A1.5 1.5 0 0 0 15 13V3a1.5 1.5 0 0 0-1.5-1.5h-8A1.5 1.5 0 0 0 4 3v1.5a.5.5 0 0 0 1 0V3a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v10a.5.5 0 0 1-.5.5h-8A.5.5 0 0 1 5 13v-1.5a.5.5 0 0 0-1 0V13a1.5 1.5 0 0 0 1.5 1.5h8z" />
+                    </svg>
+                    Entradas al Almacén
+                </h2>
+            </div>
+            <div>
+                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#agregarEntradaModal">
+                    <i class="fas fa-plus"></i> Agregar Entrada
+                </button>
+                <a href="Gestion_almacen.html" class="btn btn-secondary">--Volver--</a>
+            </div>
+        </div>
+
+        <!-- Contenedor para mensajes de alerta -->
+        <div id="alertContainer"></div>
+
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover">
+                <thead class="thead-dark">
+                    <tr>
+                        <th>ID Entrada</th>
+                        <th>Proveedor</th>
+                        <th>Precio por Equipo</th>
+                        <th>ID Equipo</th>
+                        <th>Cantidad</th>
+                        <th>Fecha</th>
+                    </tr>
+                </thead>
+
+                <tbody id="entradaTableBody">
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+
+    <!-- Bootstrap Modals -->
+    <div class="modal fade" id="agregarEntradaModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Agregar Entrada</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <!-- Formulario para agregar nueva entrada -->
+                    <form id="agregarEntradaForm">
+                        <div class="form-group">
+                            <label for="proveedor">Proveedor:</label>
+                            <input type="text" class="form-control" id="proveedor" name="proveedor" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="id_equipo">Equipo:</label>
+                            <select class="form-control" id="id_equipo" name="id_equipo" required>
+                                <!-- Opciones de equipos se cargarán dinámicamente desde la API de almacen -->
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="precio_por_equipo">Precio por Equipo:</label>
+                            <input type="number" class="form-control" id="precio_por_equipo" name="precio_por_equipo"
+                                required>
+                        </div>
+                        <div class="form-group">
+                            <label for="cantidad">Cantidad:</label>
+                            <input type="number" class="form-control" id="cantidad" name="cantidad" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="fecha">Fecha:</label>
+                            <input type="text" class="form-control" id="fecha" name="fecha" readonly>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Agregar Entrada</button>
+                        <button type="button" class="btn btn-secondary" id="limpiarFormulario">Limpiar</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <script>
+        // Función para cargar los 15 registros más recientes desde la API
+        function cargarRegistros() {
+            fetch('https://apis-soluciones-spin.run/entradas_epp.php')
+                .then(response => response.json())
+                .then(data => {
+                    const entradas = data.entradas.slice(-15).reverse(); // Obtener los últimos 15 registros y revertir el orden
+                    const entradaTableBody = document.getElementById('entradaTableBody');
+
+                    // Limpiar contenido previo de la tabla
+                    entradaTableBody.innerHTML = '';
+
+                    entradas.forEach(entrada => {
+                        const row = `<tr>
+                            <td>${entrada.id_entrada}</td>
+                            <td>${entrada.proveedor}</td>
+                            <td>${entrada.precio_por_equipo}</td>
+                            <td>${entrada.id_equipo}</td>
+                            <td>${entrada.cantidad}</td>
+                            <td>${entrada.fecha}</td>
+                        </tr>`;
+                        entradaTableBody.innerHTML += row;
+                    });
+                })
+                .catch(error => console.error('Error al cargar los registros:', error));
+        }
+
+        // Función para cargar la lista de equipos desde la API de almacen
+        function cargarEquipos() {
+            fetch('https://apis-soluciones-spin.run/almacen_epp.php')
+                .then(response => response.json())
+                .then(data => {
+                    const idEquipoSelect = document.getElementById('id_equipo');
+
+                    // Limpiar opciones previas
+                    idEquipoSelect.innerHTML = '';
+
+                    // Crear opciones desde los datos de la API
+                    data.forEach(equipo => {
+                        const option = document.createElement('option');
+                        option.value = equipo.id_equipo;
+                        option.textContent = equipo.nombre_equipo;
+                        idEquipoSelect.appendChild(option);
+                    });
+                })
+                .catch(error => console.error('Error al cargar la lista de equipos:', error));
+        }
+
+        // Llama a la función para cargar los registros y la lista de equipos al cargar la página
+        cargarRegistros();
+        cargarEquipos();
+
+        // Agregar entrada - Método POST
+        document.getElementById('agregarEntradaForm').addEventListener('submit', function (event) {
+            event.preventDefault();
+
+            const form = event.target;
+            const formData = new FormData(form);
+
+            fetch('https://apis-soluciones-spin.run/entradas_epp.php', {
+                method: 'POST',
+                body: JSON.stringify(Object.fromEntries(formData.entries())),
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            })
+                .then(response => response.json())
+                .then(data => {
+                    $('#agregarEntradaModal').modal('hide'); // Cierra el modal después de agregar una entrada
+                    alertMessage(data.message, 'success');
+                    cargarRegistros();
+                })
+                .catch(error => {
+                    console.error('Error al agregar la entrada:', error);
+                    alertMessage('Error al agregar la entrada', 'danger');
+                });
+        });
+
+        // Obtener la fecha actual y actualizar el campo de fecha
+        const fechaInput = document.getElementById('fecha');
+        const fechaActual = new Date().toISOString().split('T')[0];
+        fechaInput.value = fechaActual;
+
+        // Botón "Limpiar" - Limpia el formulario
+        document.getElementById('limpiarFormulario').addEventListener('click', function () {
+            document.getElementById('agregarEntradaForm').reset();
+        });
+
+        // Botón "Salir"
+        document.getElementById('salirBtn').addEventListener('click', function () {
+            
+            console.log('Salir');
+        });
+
+        // Función para mostrar mensajes de alerta con estilos de Bootstrap
+        function alertMessage(message, type) {
+            const alertContainer = document.createElement('div');
+            alertContainer.classList.add('alert', `alert-${type}`, 'mt-3');
+            alertContainer.textContent = message;
+            document.getElementById('alertContainer').appendChild(alertContainer);
+
+            // Desaparecer el mensaje después de 3 segundos
+            setTimeout(() => {
+                alertContainer.remove();
+            }, 3000);
+        }
+    </script>
+
+</body>
+
+</html>
